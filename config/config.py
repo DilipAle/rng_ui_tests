@@ -9,6 +9,8 @@ class Config:
         self.ENV = os.getenv("ENV", "qa").lower()  # Default to 'qa'
         self.BASE_URL = self.get_base_url()
         self.USERNAME, self.PASSWORD = self.get_credentials()
+        self.BROWSER = os.getenv("BROWSER", "chromium")  # Default browser is chromium
+        self.HEADLESS = os.getenv("HEADLESS", "true") == "false"
 
     def get_base_url(self):
         if self.ENV == "production":
@@ -37,6 +39,14 @@ class Config:
             raise ValueError(f"Credentials for {self.ENV} environment are missing in the .env file")
         
         return username, password
+
+    def get_browser_type(self):
+        """Helper method to get the browser type (chromium, firefox, or webkit)"""
+        return self.BROWSER
+
+    def is_headless(self):
+        """Helper method to check if the browser should be in headless mode"""
+        return self.HEADLESS
 
 # Example usage:
 config = Config()
