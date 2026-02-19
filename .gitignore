@@ -48,7 +48,20 @@ Thumbs.db
 *.mov
 *.wmv
 
-#Virtual Environment
+# Virtual Environment
 venv/
+
+# Environment variables - never commit credentials
 .env
+
+# Pytest cache
+.pytest_cache/
+__pycache__/
+
+# Test reports
+allure-results/
+report.html
+
+# Python cache
+*.pyc
 

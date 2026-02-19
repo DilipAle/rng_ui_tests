@@ -12,7 +12,7 @@ def setup_browser():
     with sync_playwright() as playwright:
         browser_config = BrowserConfig(playwright)  # Pass playwright instance to BrowserConfig
         browser = browser_config.launch_browser()
-        page = browser.new_page()
+        page = browser.new_page(viewport={"width": 1920, "height": 1080})
         yield page  # Provide the page to the test
         browser.close()  # Close the browser after the test is done
 
@@ -31,8 +31,8 @@ def login(setup_browser, config):
     page.goto(config.BASE_URL)
     login_page = LoginPage(page)  # Create an instance of the LoginPage
 
-    # Perform login using credentials from the config file
-    login_page.login(config.USERNAME, config.PASSWORD)
+    # Perform login using credentials from the config file (handles TOTP if triggered)
+    login_page.login_with_totp(config.USERNAME, config.PASSWORD, config.TOTP_SECRET)
 
     # Return the logged-in page
     yield page
