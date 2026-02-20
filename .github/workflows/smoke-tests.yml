@@ -1,0 +1,316 @@
+name: Smoke Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  renegade-ui-smoke:
+    name: Renegade UI Smoke Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Create venv and install dependencies
+        run: |
+          python -m venv venv
+          venv/bin/pip install -r renegade-ui-tests/requirements.txt
+
+      - name: Install Playwright browsers
+        run: venv/bin/playwright install --with-deps chromium
+
+      - name: Install Allure CLI
+        run: |
+          wget -qO allure.tgz https://github.com/allure-framework/allure2/releases/download/2.29.0/allure-2.29.0.tgz
+          tar -xzf allure.tgz
+          sudo mv allure-2.29.0 /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
+
+      - name: Create .env
+        run: |
+          cat > renegade-ui-tests/.env <<EOF
+          ENV=${{ secrets.ENV }}
+          QA_URL=${{ secrets.QA_URL }}
+          QA_USERNAME=${{ secrets.QA_USERNAME }}
+          QA_PASSWORD=${{ secrets.QA_PASSWORD }}
+          QA_TOTP_SECRET=${{ secrets.QA_TOTP_SECRET }}
+          BROWSER=chromium
+          HEADLESS=true
+          EOF
+
+      - name: Run smoke tests
+        working-directory: renegade-ui-tests
+        run: ../venv/bin/pytest -m smoke -v
+        continue-on-error: true
+
+      - name: Generate Allure report
+        working-directory: renegade-ui-tests
+        run: allure generate allure-results --clean -o allure-report
+
+      - name: Upload Allure report
+        uses: actions/upload-artifact@v4
+        with:
+          name: renegade-ui-allure-report
+          path: renegade-ui-tests/allure-report/
+          retention-days: 7
+
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: renegade-ui-screenshots
+          path: renegade-ui-tests/screenshots/
+          retention-days: 7
+
+      - name: Send email report
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          to: dilip.ale@renegadeinsurance.com
+          from: QA Automation <${{ secrets.MAIL_USERNAME }}>
+          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Renegade UI Smoke Tests — ${{ github.ref_name }}"
+          body: |
+            Smoke test run completed for branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Status: ${{ job.status }}
+
+            Download the full Allure report from GitHub Actions artifacts:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+  agency-height-smoke:
+    name: Agency Height Smoke Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Create venv and install dependencies
+        run: |
+          python -m venv venv
+          venv/bin/pip install -r agency-height-tests/requirements.txt
+
+      - name: Install Playwright browsers
+        run: venv/bin/playwright install --with-deps chromium
+
+      - name: Install Allure CLI
+        run: |
+          wget -qO allure.tgz https://github.com/allure-framework/allure2/releases/download/2.29.0/allure-2.29.0.tgz
+          tar -xzf allure.tgz
+          sudo mv allure-2.29.0 /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
+
+      - name: Create .env
+        run: |
+          cat > agency-height-tests/.env <<EOF
+          ENV=${{ secrets.ENV }}
+          QA_AH_URL=${{ secrets.QA_AH_URL }}
+          QA_AH_USERNAME=${{ secrets.QA_AH_USERNAME }}
+          QA_AH_PASSWORD=${{ secrets.QA_AH_PASSWORD }}
+          BROWSER=chromium
+          HEADLESS=true
+          EOF
+
+      - name: Run smoke tests
+        working-directory: agency-height-tests
+        run: ../venv/bin/pytest -m smoke -v
+        continue-on-error: true
+
+      - name: Generate Allure report
+        working-directory: agency-height-tests
+        run: allure generate allure-results --clean -o allure-report
+
+      - name: Upload Allure report
+        uses: actions/upload-artifact@v4
+        with:
+          name: agency-height-allure-report
+          path: agency-height-tests/allure-report/
+          retention-days: 7
+
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agency-height-screenshots
+          path: agency-height-tests/screenshots/
+          retention-days: 7
+
+      - name: Send email report
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          to: dilip.ale@renegadeinsurance.com
+          from: QA Automation <${{ secrets.MAIL_USERNAME }}>
+          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Agency Height Smoke Tests — ${{ github.ref_name }}"
+          body: |
+            Smoke test run completed for branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Status: ${{ job.status }}
+
+            Download the full Allure report from GitHub Actions artifacts:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+  customer-portal-smoke:
+    name: Customer Portal Smoke Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Create venv and install dependencies
+        run: |
+          python -m venv venv
+          venv/bin/pip install -r customer-portal-tests/requirements.txt
+
+      - name: Install Playwright browsers
+        run: venv/bin/playwright install --with-deps chromium
+
+      - name: Install Allure CLI
+        run: |
+          wget -qO allure.tgz https://github.com/allure-framework/allure2/releases/download/2.29.0/allure-2.29.0.tgz
+          tar -xzf allure.tgz
+          sudo mv allure-2.29.0 /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
+
+      - name: Create .env
+        run: |
+          cat > customer-portal-tests/.env <<EOF
+          ENV=${{ secrets.ENV }}
+          QA_PORTAL_URL=${{ secrets.QA_PORTAL_URL }}
+          QA_PORTAL_USERNAME=${{ secrets.QA_PORTAL_USERNAME }}
+          QA_PORTAL_PASSWORD=${{ secrets.QA_PORTAL_PASSWORD }}
+          BROWSER=chromium
+          HEADLESS=true
+          EOF
+
+      - name: Run smoke tests
+        working-directory: customer-portal-tests
+        run: ../venv/bin/pytest -m smoke -v
+        continue-on-error: true
+
+      - name: Generate Allure report
+        working-directory: customer-portal-tests
+        run: allure generate allure-results --clean -o allure-report
+
+      - name: Upload Allure report
+        uses: actions/upload-artifact@v4
+        with:
+          name: customer-portal-allure-report
+          path: customer-portal-tests/allure-report/
+          retention-days: 7
+
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: customer-portal-screenshots
+          path: customer-portal-tests/screenshots/
+          retention-days: 7
+
+      - name: Send email report
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          to: dilip.ale@renegadeinsurance.com
+          from: QA Automation <${{ secrets.MAIL_USERNAME }}>
+          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Customer Portal Smoke Tests — ${{ github.ref_name }}"
+          body: |
+            Smoke test run completed for branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Status: ${{ job.status }}
+
+            Download the full Allure report from GitHub Actions artifacts:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+  salesforce-api-smoke:
+    name: Salesforce API Smoke Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Create venv and install dependencies
+        run: |
+          python -m venv venv
+          venv/bin/pip install -r salesforce-api-tests/requirements.txt
+
+      - name: Install Allure CLI
+        run: |
+          wget -qO allure.tgz https://github.com/allure-framework/allure2/releases/download/2.29.0/allure-2.29.0.tgz
+          tar -xzf allure.tgz
+          sudo mv allure-2.29.0 /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
+
+      - name: Create .env
+        run: |
+          cat > salesforce-api-tests/.env <<EOF
+          ENV=${{ secrets.ENV }}
+          SF_USERNAME=${{ secrets.SF_USERNAME }}
+          SF_PASSWORD=${{ secrets.SF_PASSWORD }}
+          SF_SECURITY_TOKEN=${{ secrets.SF_SECURITY_TOKEN }}
+          SF_DOMAIN=${{ secrets.SF_DOMAIN }}
+          EOF
+
+      - name: Run smoke tests
+        working-directory: salesforce-api-tests
+        run: ../venv/bin/pytest -m smoke -v
+        continue-on-error: true
+
+      - name: Generate Allure report
+        working-directory: salesforce-api-tests
+        run: allure generate allure-results --clean -o allure-report
+
+      - name: Upload Allure report
+        uses: actions/upload-artifact@v4
+        with:
+          name: salesforce-api-allure-report
+          path: salesforce-api-tests/allure-report/
+          retention-days: 7
+
+      - name: Send email report
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          to: dilip.ale@renegadeinsurance.com
+          from: QA Automation <${{ secrets.MAIL_USERNAME }}>
+          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Salesforce API Smoke Tests — ${{ github.ref_name }}"
+          body: |
+            Smoke test run completed for branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Status: ${{ job.status }}
+
+            Download the full Allure report from GitHub Actions artifacts:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

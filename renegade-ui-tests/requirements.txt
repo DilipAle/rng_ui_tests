@@ -1,0 +1,12 @@
+greenlet==3.1.1
+playwright==1.51.0
+pyee==12.1.1
+python-dotenv==1.1.0
+typing_extensions==4.13.0
+pyotp==2.9.0
+pytest==9.0.2
+pytest-html==4.2.0
+pytest-metadata==3.1.1
+pytest-xdist==3.6.1
+pytest-rerunfailures==14.0
+allure-pytest==2.13.5
