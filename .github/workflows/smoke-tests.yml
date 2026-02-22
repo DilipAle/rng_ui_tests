@@ -1,4 +1,4 @@
-name: Smoke Tests
+name: Smoke + Regression Tests
 
 on:
   push:
@@ -6,8 +6,8 @@ on:
   pull_request:
 
 jobs:
-  renegade-ui-smoke:
-    name: Renegade UI Smoke Tests
+  renegade-ui:
+    name: Renegade UI Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -49,6 +49,11 @@ jobs:
         run: ../venv/bin/pytest -m smoke -v
         continue-on-error: true
 
+      - name: Run regression tests
+        working-directory: renegade-ui-tests
+        run: ../venv/bin/pytest -m regression -v
+        continue-on-error: true
+
       - name: Generate Allure report
         working-directory: renegade-ui-tests
         run: allure generate allure-results --clean -o allure-report
@@ -79,17 +84,19 @@ jobs:
           password: ${{ secrets.MAIL_PASSWORD }}
           to: dilip.ale@renegadeinsurance.com
           from: QA Automation <${{ secrets.MAIL_USERNAME }}>
-          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Renegade UI Smoke Tests — ${{ github.ref_name }}"
+          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Renegade UI Tests (Smoke + Regression) — ${{ github.ref_name }}"
           body: |
-            Smoke test run completed for branch: ${{ github.ref_name }}
+            Test run completed for branch: ${{ github.ref_name }}
             Commit: ${{ github.sha }}
             Status: ${{ job.status }}
+
+            Includes: Smoke Tests + Regression Tests
 
             Download the full Allure report from GitHub Actions artifacts:
             ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-  agency-height-smoke:
-    name: Agency Height Smoke Tests
+  agency-height:
+    name: Agency Height Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -130,6 +137,11 @@ jobs:
         run: ../venv/bin/pytest -m smoke -v
         continue-on-error: true
 
+      - name: Run regression tests
+        working-directory: agency-height-tests
+        run: ../venv/bin/pytest -m regression -v
+        continue-on-error: true
+
       - name: Generate Allure report
         working-directory: agency-height-tests
         run: allure generate allure-results --clean -o allure-report
@@ -160,17 +172,19 @@ jobs:
           password: ${{ secrets.MAIL_PASSWORD }}
           to: dilip.ale@renegadeinsurance.com
           from: QA Automation <${{ secrets.MAIL_USERNAME }}>
-          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Agency Height Smoke Tests — ${{ github.ref_name }}"
+          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Agency Height Tests (Smoke + Regression) — ${{ github.ref_name }}"
           body: |
-            Smoke test run completed for branch: ${{ github.ref_name }}
+            Test run completed for branch: ${{ github.ref_name }}
             Commit: ${{ github.sha }}
             Status: ${{ job.status }}
+
+            Includes: Smoke Tests + Regression Tests
 
             Download the full Allure report from GitHub Actions artifacts:
             ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-  customer-portal-smoke:
-    name: Customer Portal Smoke Tests
+  customer-portal:
+    name: Customer Portal Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -211,6 +225,11 @@ jobs:
         run: ../venv/bin/pytest -m smoke -v
         continue-on-error: true
 
+      - name: Run regression tests
+        working-directory: customer-portal-tests
+        run: ../venv/bin/pytest -m regression -v
+        continue-on-error: true
+
       - name: Generate Allure report
         working-directory: customer-portal-tests
         run: allure generate allure-results --clean -o allure-report
@@ -241,17 +260,19 @@ jobs:
           password: ${{ secrets.MAIL_PASSWORD }}
           to: dilip.ale@renegadeinsurance.com
           from: QA Automation <${{ secrets.MAIL_USERNAME }}>
-          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Customer Portal Smoke Tests — ${{ github.ref_name }}"
+          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Customer Portal Tests (Smoke + Regression) — ${{ github.ref_name }}"
           body: |
-            Smoke test run completed for branch: ${{ github.ref_name }}
+            Test run completed for branch: ${{ github.ref_name }}
             Commit: ${{ github.sha }}
             Status: ${{ job.status }}
+
+            Includes: Smoke Tests + Regression Tests
 
             Download the full Allure report from GitHub Actions artifacts:
             ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-  salesforce-api-smoke:
-    name: Salesforce API Smoke Tests
+  salesforce-api:
+    name: Salesforce API Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -288,6 +309,11 @@ jobs:
         run: ../venv/bin/pytest -m smoke -v
         continue-on-error: true
 
+      - name: Run regression tests
+        working-directory: salesforce-api-tests
+        run: ../venv/bin/pytest -m regression -v
+        continue-on-error: true
+
       - name: Generate Allure report
         working-directory: salesforce-api-tests
         run: allure generate allure-results --clean -o allure-report
@@ -310,11 +336,13 @@ jobs:
           password: ${{ secrets.MAIL_PASSWORD }}
           to: dilip.ale@renegadeinsurance.com
           from: QA Automation <${{ secrets.MAIL_USERNAME }}>
-          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Salesforce API Smoke Tests — ${{ github.ref_name }}"
+          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Salesforce API Tests (Smoke + Regression) — ${{ github.ref_name }}"
           body: |
-            Smoke test run completed for branch: ${{ github.ref_name }}
+            Test run completed for branch: ${{ github.ref_name }}
             Commit: ${{ github.sha }}
             Status: ${{ job.status }}
+
+            Includes: Smoke Tests + Regression Tests
 
             Download the full Allure report from GitHub Actions artifacts:
             ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
