@@ -46,13 +46,17 @@ jobs:
 
       - name: Run smoke tests
         working-directory: renegade-ui-tests
-        run: ../venv/bin/pytest -m smoke -v
-        continue-on-error: true
+        run: |
+          ../venv/bin/pytest -m smoke -v 2>&1 | tee smoke_results.txt || true
+          SMOKE=$(grep -E "passed|failed|error" smoke_results.txt | tail -1)
+          echo "SMOKE_SUMMARY=${SMOKE:-No smoke tests found}" >> $GITHUB_ENV
 
       - name: Run regression tests
         working-directory: renegade-ui-tests
-        run: ../venv/bin/pytest -m regression -v
-        continue-on-error: true
+        run: |
+          ../venv/bin/pytest -m regression -v 2>&1 | tee regression_results.txt || true
+          REGRESSION=$(grep -E "passed|failed|error" regression_results.txt | tail -1)
+          echo "REGRESSION_SUMMARY=${REGRESSION:-No regression tests found}" >> $GITHUB_ENV
 
       - name: Generate Allure report
         working-directory: renegade-ui-tests
@@ -84,16 +88,21 @@ jobs:
           password: ${{ secrets.MAIL_PASSWORD }}
           to: dilip.ale@renegadeinsurance.com
           from: QA Automation <${{ secrets.MAIL_USERNAME }}>
-          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Renegade UI Tests (Smoke + Regression) — ${{ github.ref_name }}"
+          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Renegade UI Tests — ${{ github.ref_name }}"
           body: |
-            Test run completed for branch: ${{ github.ref_name }}
-            Commit: ${{ github.sha }}
-            Status: ${{ job.status }}
-
-            Includes: Smoke Tests + Regression Tests
-
-            Download the full Allure report from GitHub Actions artifacts:
+            ==========================================
+            RENEGADE UI TEST RESULTS
+            ==========================================
+            Branch  : ${{ github.ref_name }}
+            Commit  : ${{ github.sha }}
+            Status  : ${{ job.status }}
+            ------------------------------------------
+            SMOKE TESTS     : ${{ env.SMOKE_SUMMARY }}
+            REGRESSION TESTS: ${{ env.REGRESSION_SUMMARY }}
+            ------------------------------------------
+            Full Allure Report (download):
             ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            ==========================================
 
   agency-height:
     name: Agency Height Tests
@@ -134,13 +143,17 @@ jobs:
 
       - name: Run smoke tests
         working-directory: agency-height-tests
-        run: ../venv/bin/pytest -m smoke -v
-        continue-on-error: true
+        run: |
+          ../venv/bin/pytest -m smoke -v 2>&1 | tee smoke_results.txt || true
+          SMOKE=$(grep -E "passed|failed|error" smoke_results.txt | tail -1)
+          echo "SMOKE_SUMMARY=${SMOKE:-No smoke tests found}" >> $GITHUB_ENV
 
       - name: Run regression tests
         working-directory: agency-height-tests
-        run: ../venv/bin/pytest -m regression -v
-        continue-on-error: true
+        run: |
+          ../venv/bin/pytest -m regression -v 2>&1 | tee regression_results.txt || true
+          REGRESSION=$(grep -E "passed|failed|error" regression_results.txt | tail -1)
+          echo "REGRESSION_SUMMARY=${REGRESSION:-No regression tests found}" >> $GITHUB_ENV
 
       - name: Generate Allure report
         working-directory: agency-height-tests
@@ -172,16 +185,21 @@ jobs:
           password: ${{ secrets.MAIL_PASSWORD }}
           to: dilip.ale@renegadeinsurance.com
           from: QA Automation <${{ secrets.MAIL_USERNAME }}>
-          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Agency Height Tests (Smoke + Regression) — ${{ github.ref_name }}"
+          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Agency Height Tests — ${{ github.ref_name }}"
           body: |
-            Test run completed for branch: ${{ github.ref_name }}
-            Commit: ${{ github.sha }}
-            Status: ${{ job.status }}
-
-            Includes: Smoke Tests + Regression Tests
-
-            Download the full Allure report from GitHub Actions artifacts:
+            ==========================================
+            AGENCY HEIGHT TEST RESULTS
+            ==========================================
+            Branch  : ${{ github.ref_name }}
+            Commit  : ${{ github.sha }}
+            Status  : ${{ job.status }}
+            ------------------------------------------
+            SMOKE TESTS     : ${{ env.SMOKE_SUMMARY }}
+            REGRESSION TESTS: ${{ env.REGRESSION_SUMMARY }}
+            ------------------------------------------
+            Full Allure Report (download):
             ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            ==========================================
 
   customer-portal:
     name: Customer Portal Tests
@@ -222,13 +240,17 @@ jobs:
 
       - name: Run smoke tests
         working-directory: customer-portal-tests
-        run: ../venv/bin/pytest -m smoke -v
-        continue-on-error: true
+        run: |
+          ../venv/bin/pytest -m smoke -v 2>&1 | tee smoke_results.txt || true
+          SMOKE=$(grep -E "passed|failed|error" smoke_results.txt | tail -1)
+          echo "SMOKE_SUMMARY=${SMOKE:-No smoke tests found}" >> $GITHUB_ENV
 
       - name: Run regression tests
         working-directory: customer-portal-tests
-        run: ../venv/bin/pytest -m regression -v
-        continue-on-error: true
+        run: |
+          ../venv/bin/pytest -m regression -v 2>&1 | tee regression_results.txt || true
+          REGRESSION=$(grep -E "passed|failed|error" regression_results.txt | tail -1)
+          echo "REGRESSION_SUMMARY=${REGRESSION:-No regression tests found}" >> $GITHUB_ENV
 
       - name: Generate Allure report
         working-directory: customer-portal-tests
@@ -260,16 +282,21 @@ jobs:
           password: ${{ secrets.MAIL_PASSWORD }}
           to: dilip.ale@renegadeinsurance.com
           from: QA Automation <${{ secrets.MAIL_USERNAME }}>
-          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Customer Portal Tests (Smoke + Regression) — ${{ github.ref_name }}"
+          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Customer Portal Tests — ${{ github.ref_name }}"
           body: |
-            Test run completed for branch: ${{ github.ref_name }}
-            Commit: ${{ github.sha }}
-            Status: ${{ job.status }}
-
-            Includes: Smoke Tests + Regression Tests
-
-            Download the full Allure report from GitHub Actions artifacts:
+            ==========================================
+            CUSTOMER PORTAL TEST RESULTS
+            ==========================================
+            Branch  : ${{ github.ref_name }}
+            Commit  : ${{ github.sha }}
+            Status  : ${{ job.status }}
+            ------------------------------------------
+            SMOKE TESTS     : ${{ env.SMOKE_SUMMARY }}
+            REGRESSION TESTS: ${{ env.REGRESSION_SUMMARY }}
+            ------------------------------------------
+            Full Allure Report (download):
             ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            ==========================================
 
   salesforce-api:
     name: Salesforce API Tests
@@ -306,13 +333,17 @@ jobs:
 
       - name: Run smoke tests
         working-directory: salesforce-api-tests
-        run: ../venv/bin/pytest -m smoke -v
-        continue-on-error: true
+        run: |
+          ../venv/bin/pytest -m smoke -v 2>&1 | tee smoke_results.txt || true
+          SMOKE=$(grep -E "passed|failed|error" smoke_results.txt | tail -1)
+          echo "SMOKE_SUMMARY=${SMOKE:-No smoke tests found}" >> $GITHUB_ENV
 
       - name: Run regression tests
         working-directory: salesforce-api-tests
-        run: ../venv/bin/pytest -m regression -v
-        continue-on-error: true
+        run: |
+          ../venv/bin/pytest -m regression -v 2>&1 | tee regression_results.txt || true
+          REGRESSION=$(grep -E "passed|failed|error" regression_results.txt | tail -1)
+          echo "REGRESSION_SUMMARY=${REGRESSION:-No regression tests found}" >> $GITHUB_ENV
 
       - name: Generate Allure report
         working-directory: salesforce-api-tests
@@ -336,13 +367,18 @@ jobs:
           password: ${{ secrets.MAIL_PASSWORD }}
           to: dilip.ale@renegadeinsurance.com
           from: QA Automation <${{ secrets.MAIL_USERNAME }}>
-          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Salesforce API Tests (Smoke + Regression) — ${{ github.ref_name }}"
+          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Salesforce API Tests — ${{ github.ref_name }}"
           body: |
-            Test run completed for branch: ${{ github.ref_name }}
-            Commit: ${{ github.sha }}
-            Status: ${{ job.status }}
-
-            Includes: Smoke Tests + Regression Tests
-
-            Download the full Allure report from GitHub Actions artifacts:
+            ==========================================
+            SALESFORCE API TEST RESULTS
+            ==========================================
+            Branch  : ${{ github.ref_name }}
+            Commit  : ${{ github.sha }}
+            Status  : ${{ job.status }}
+            ------------------------------------------
+            SMOKE TESTS     : ${{ env.SMOKE_SUMMARY }}
+            REGRESSION TESTS: ${{ env.REGRESSION_SUMMARY }}
+            ------------------------------------------
+            Full Allure Report (download):
             ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            ==========================================
