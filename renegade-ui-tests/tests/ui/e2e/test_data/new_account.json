@@ -1,0 +1,13 @@
+{
+  "account": {
+    "first_name": "Test",
+    "last_name": "User",
+    "email": "testuser@example.com",
+    "phone": "5550100100"
+  },
+  "policy": {
+    "type": "",
+    "effective_date": "",
+    "premium": ""
+  }
+}

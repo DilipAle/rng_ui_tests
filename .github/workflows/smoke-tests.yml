@@ -9,6 +9,8 @@ jobs:
   renegade-ui:
     name: Renegade UI Tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -48,21 +50,39 @@ jobs:
         working-directory: renegade-ui-tests
         run: |
           ../venv/bin/pytest -m smoke -v 2>&1 | tee smoke_results.txt || true
-          SMOKE=$(grep -E "passed|failed|error" smoke_results.txt | tail -1)
+          SMOKE=$(grep -E "passed|failed|error" smoke_results.txt | tail -1 | tr -d '=' | xargs)
           echo "SMOKE_SUMMARY=${SMOKE:-No smoke tests found}" >> $GITHUB_ENV
+
+      - name: Run e2e tests
+        working-directory: renegade-ui-tests
+        run: |
+          ../venv/bin/pytest -m e2e -v 2>&1 | tee e2e_results.txt || true
+          E2E=$(grep -E "passed|failed|error" e2e_results.txt | tail -1 | tr -d '=' | xargs)
+          echo "E2E_SUMMARY=${E2E:-No e2e tests found}" >> $GITHUB_ENV
 
       - name: Run regression tests
         working-directory: renegade-ui-tests
         run: |
           ../venv/bin/pytest -m regression -v 2>&1 | tee regression_results.txt || true
-          REGRESSION=$(grep -E "passed|failed|error" regression_results.txt | tail -1)
+          REGRESSION=$(grep -E "passed|failed|error" regression_results.txt | tail -1 | tr -d '=' | xargs)
           echo "REGRESSION_SUMMARY=${REGRESSION:-No regression tests found}" >> $GITHUB_ENV
 
       - name: Generate Allure report
+        if: always()
         working-directory: renegade-ui-tests
         run: allure generate allure-results --clean -o allure-report
 
-      - name: Upload Allure report
+      - name: Deploy Allure report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: renegade-ui-tests/allure-report
+          destination_dir: renegade-ui
+          keep_files: true
+
+      - name: Upload Allure report artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: renegade-ui-allure-report
@@ -98,15 +118,18 @@ jobs:
             Status  : ${{ job.status }}
             ------------------------------------------
             SMOKE TESTS     : ${{ env.SMOKE_SUMMARY }}
+            E2E TESTS       : ${{ env.E2E_SUMMARY }}
             REGRESSION TESTS: ${{ env.REGRESSION_SUMMARY }}
             ------------------------------------------
-            Full Allure Report (download):
-            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Allure Report (click to view):
+            https://dilipale.github.io/rng_ui_tests/renegade-ui/
             ==========================================
 
   agency-height:
     name: Agency Height Tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -145,21 +168,32 @@ jobs:
         working-directory: agency-height-tests
         run: |
           ../venv/bin/pytest -m smoke -v 2>&1 | tee smoke_results.txt || true
-          SMOKE=$(grep -E "passed|failed|error" smoke_results.txt | tail -1)
+          SMOKE=$(grep -E "passed|failed|error" smoke_results.txt | tail -1 | tr -d '=' | xargs)
           echo "SMOKE_SUMMARY=${SMOKE:-No smoke tests found}" >> $GITHUB_ENV
 
       - name: Run regression tests
         working-directory: agency-height-tests
         run: |
           ../venv/bin/pytest -m regression -v 2>&1 | tee regression_results.txt || true
-          REGRESSION=$(grep -E "passed|failed|error" regression_results.txt | tail -1)
+          REGRESSION=$(grep -E "passed|failed|error" regression_results.txt | tail -1 | tr -d '=' | xargs)
           echo "REGRESSION_SUMMARY=${REGRESSION:-No regression tests found}" >> $GITHUB_ENV
 
       - name: Generate Allure report
+        if: always()
         working-directory: agency-height-tests
         run: allure generate allure-results --clean -o allure-report
 
-      - name: Upload Allure report
+      - name: Deploy Allure report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: agency-height-tests/allure-report
+          destination_dir: agency-height
+          keep_files: true
+
+      - name: Upload Allure report artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: agency-height-allure-report
@@ -197,13 +231,15 @@ jobs:
             SMOKE TESTS     : ${{ env.SMOKE_SUMMARY }}
             REGRESSION TESTS: ${{ env.REGRESSION_SUMMARY }}
             ------------------------------------------
-            Full Allure Report (download):
-            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Allure Report (click to view):
+            https://dilipale.github.io/rng_ui_tests/agency-height/
             ==========================================
 
   customer-portal:
     name: Customer Portal Tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -242,21 +278,32 @@ jobs:
         working-directory: customer-portal-tests
         run: |
           ../venv/bin/pytest -m smoke -v 2>&1 | tee smoke_results.txt || true
-          SMOKE=$(grep -E "passed|failed|error" smoke_results.txt | tail -1)
+          SMOKE=$(grep -E "passed|failed|error" smoke_results.txt | tail -1 | tr -d '=' | xargs)
           echo "SMOKE_SUMMARY=${SMOKE:-No smoke tests found}" >> $GITHUB_ENV
 
       - name: Run regression tests
         working-directory: customer-portal-tests
         run: |
           ../venv/bin/pytest -m regression -v 2>&1 | tee regression_results.txt || true
-          REGRESSION=$(grep -E "passed|failed|error" regression_results.txt | tail -1)
+          REGRESSION=$(grep -E "passed|failed|error" regression_results.txt | tail -1 | tr -d '=' | xargs)
           echo "REGRESSION_SUMMARY=${REGRESSION:-No regression tests found}" >> $GITHUB_ENV
 
       - name: Generate Allure report
+        if: always()
         working-directory: customer-portal-tests
         run: allure generate allure-results --clean -o allure-report
 
-      - name: Upload Allure report
+      - name: Deploy Allure report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: customer-portal-tests/allure-report
+          destination_dir: customer-portal
+          keep_files: true
+
+      - name: Upload Allure report artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: customer-portal-allure-report
@@ -294,13 +341,15 @@ jobs:
             SMOKE TESTS     : ${{ env.SMOKE_SUMMARY }}
             REGRESSION TESTS: ${{ env.REGRESSION_SUMMARY }}
             ------------------------------------------
-            Full Allure Report (download):
-            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Allure Report (click to view):
+            https://dilipale.github.io/rng_ui_tests/customer-portal/
             ==========================================
 
   salesforce-api:
     name: Salesforce API Tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -335,21 +384,32 @@ jobs:
         working-directory: salesforce-api-tests
         run: |
           ../venv/bin/pytest -m smoke -v 2>&1 | tee smoke_results.txt || true
-          SMOKE=$(grep -E "passed|failed|error" smoke_results.txt | tail -1)
+          SMOKE=$(grep -E "passed|failed|error" smoke_results.txt | tail -1 | tr -d '=' | xargs)
           echo "SMOKE_SUMMARY=${SMOKE:-No smoke tests found}" >> $GITHUB_ENV
 
       - name: Run regression tests
         working-directory: salesforce-api-tests
         run: |
           ../venv/bin/pytest -m regression -v 2>&1 | tee regression_results.txt || true
-          REGRESSION=$(grep -E "passed|failed|error" regression_results.txt | tail -1)
+          REGRESSION=$(grep -E "passed|failed|error" regression_results.txt | tail -1 | tr -d '=' | xargs)
           echo "REGRESSION_SUMMARY=${REGRESSION:-No regression tests found}" >> $GITHUB_ENV
 
       - name: Generate Allure report
+        if: always()
         working-directory: salesforce-api-tests
         run: allure generate allure-results --clean -o allure-report
 
-      - name: Upload Allure report
+      - name: Deploy Allure report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: salesforce-api-tests/allure-report
+          destination_dir: salesforce-api
+          keep_files: true
+
+      - name: Upload Allure report artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: salesforce-api-allure-report
@@ -379,6 +439,6 @@ jobs:
             SMOKE TESTS     : ${{ env.SMOKE_SUMMARY }}
             REGRESSION TESTS: ${{ env.REGRESSION_SUMMARY }}
             ------------------------------------------
-            Full Allure Report (download):
-            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Allure Report (click to view):
+            https://dilipale.github.io/rng_ui_tests/salesforce-api/
             ==========================================
