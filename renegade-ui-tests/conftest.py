@@ -113,6 +113,10 @@ def login(setup_browser, config):
     # login_with_totp handles both regular login and MFA/TOTP verification
     login_page.login_with_totp(config.USERNAME, config.PASSWORD, config.TOTP_SECRET)
 
+    # Wait for Salesforce home page to fully render before yielding to tests.
+    # After TOTP redirect, Lightning takes extra time to load the nav bar.
+    page.wait_for_selector("//span[@title='My Agency']", timeout=60000)
+
     yield page
 
     # Add logout logic here if needed between tests
