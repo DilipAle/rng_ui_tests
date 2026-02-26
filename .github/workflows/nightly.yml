@@ -1,9 +1,9 @@
-name: Smoke + Regression Tests
+name: Nightly — Regression Tests
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
+  schedule:
+    - cron: '0 0 * * *'   # runs every night at midnight UTC
+  workflow_dispatch:        # allows manual trigger from GitHub Actions UI
 
 jobs:
   renegade-ui:
@@ -45,20 +45,6 @@ jobs:
           BROWSER=chromium
           HEADLESS=true
           EOF
-
-      - name: Run smoke tests
-        working-directory: renegade-ui-tests
-        run: |
-          ../venv/bin/pytest -m smoke -v 2>&1 | tee smoke_results.txt || true
-          SMOKE=$(grep -E "passed|failed|error" smoke_results.txt | tail -1 | tr -d '=' | xargs)
-          echo "SMOKE_SUMMARY=${SMOKE:-No smoke tests found}" >> $GITHUB_ENV
-
-      - name: Run e2e tests
-        working-directory: renegade-ui-tests
-        run: |
-          ../venv/bin/pytest -m e2e -v 2>&1 | tee e2e_results.txt || true
-          E2E=$(grep -E "passed|failed|error" e2e_results.txt | tail -1 | tr -d '=' | xargs)
-          echo "E2E_SUMMARY=${E2E:-No e2e tests found}" >> $GITHUB_ENV
 
       - name: Run regression tests
         working-directory: renegade-ui-tests
@@ -108,17 +94,14 @@ jobs:
           password: ${{ secrets.MAIL_PASSWORD }}
           to: dilip.ale@renegadeinsurance.com
           from: QA Automation <${{ secrets.MAIL_USERNAME }}>
-          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Renegade UI Tests — ${{ github.ref_name }}"
+          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Renegade UI — Nightly Regression"
           body: |
             ==========================================
-            RENEGADE UI TEST RESULTS
+            RENEGADE UI — NIGHTLY REGRESSION RESULTS
             ==========================================
             Branch  : ${{ github.ref_name }}
-            Commit  : ${{ github.sha }}
             Status  : ${{ job.status }}
             ------------------------------------------
-            SMOKE TESTS     : ${{ env.SMOKE_SUMMARY }}
-            E2E TESTS       : ${{ env.E2E_SUMMARY }}
             REGRESSION TESTS: ${{ env.REGRESSION_SUMMARY }}
             ------------------------------------------
             Allure Report (click to view):
@@ -163,13 +146,6 @@ jobs:
           BROWSER=chromium
           HEADLESS=true
           EOF
-
-      - name: Run smoke tests
-        working-directory: agency-height-tests
-        run: |
-          ../venv/bin/pytest -m smoke -v 2>&1 | tee smoke_results.txt || true
-          SMOKE=$(grep -E "passed|failed|error" smoke_results.txt | tail -1 | tr -d '=' | xargs)
-          echo "SMOKE_SUMMARY=${SMOKE:-No smoke tests found}" >> $GITHUB_ENV
 
       - name: Run regression tests
         working-directory: agency-height-tests
@@ -219,16 +195,14 @@ jobs:
           password: ${{ secrets.MAIL_PASSWORD }}
           to: dilip.ale@renegadeinsurance.com
           from: QA Automation <${{ secrets.MAIL_USERNAME }}>
-          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Agency Height Tests — ${{ github.ref_name }}"
+          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Agency Height — Nightly Regression"
           body: |
             ==========================================
-            AGENCY HEIGHT TEST RESULTS
+            AGENCY HEIGHT — NIGHTLY REGRESSION RESULTS
             ==========================================
             Branch  : ${{ github.ref_name }}
-            Commit  : ${{ github.sha }}
             Status  : ${{ job.status }}
             ------------------------------------------
-            SMOKE TESTS     : ${{ env.SMOKE_SUMMARY }}
             REGRESSION TESTS: ${{ env.REGRESSION_SUMMARY }}
             ------------------------------------------
             Allure Report (click to view):
@@ -273,13 +247,6 @@ jobs:
           BROWSER=chromium
           HEADLESS=true
           EOF
-
-      - name: Run smoke tests
-        working-directory: customer-portal-tests
-        run: |
-          ../venv/bin/pytest -m smoke -v 2>&1 | tee smoke_results.txt || true
-          SMOKE=$(grep -E "passed|failed|error" smoke_results.txt | tail -1 | tr -d '=' | xargs)
-          echo "SMOKE_SUMMARY=${SMOKE:-No smoke tests found}" >> $GITHUB_ENV
 
       - name: Run regression tests
         working-directory: customer-portal-tests
@@ -329,16 +296,14 @@ jobs:
           password: ${{ secrets.MAIL_PASSWORD }}
           to: dilip.ale@renegadeinsurance.com
           from: QA Automation <${{ secrets.MAIL_USERNAME }}>
-          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Customer Portal Tests — ${{ github.ref_name }}"
+          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Customer Portal — Nightly Regression"
           body: |
             ==========================================
-            CUSTOMER PORTAL TEST RESULTS
+            CUSTOMER PORTAL — NIGHTLY REGRESSION RESULTS
             ==========================================
             Branch  : ${{ github.ref_name }}
-            Commit  : ${{ github.sha }}
             Status  : ${{ job.status }}
             ------------------------------------------
-            SMOKE TESTS     : ${{ env.SMOKE_SUMMARY }}
             REGRESSION TESTS: ${{ env.REGRESSION_SUMMARY }}
             ------------------------------------------
             Allure Report (click to view):
@@ -380,13 +345,6 @@ jobs:
           SF_DOMAIN=${{ secrets.SF_DOMAIN }}
           EOF
 
-      - name: Run smoke tests
-        working-directory: salesforce-api-tests
-        run: |
-          ../venv/bin/pytest -m smoke -v 2>&1 | tee smoke_results.txt || true
-          SMOKE=$(grep -E "passed|failed|error" smoke_results.txt | tail -1 | tr -d '=' | xargs)
-          echo "SMOKE_SUMMARY=${SMOKE:-No smoke tests found}" >> $GITHUB_ENV
-
       - name: Run regression tests
         working-directory: salesforce-api-tests
         run: |
@@ -427,16 +385,14 @@ jobs:
           password: ${{ secrets.MAIL_PASSWORD }}
           to: dilip.ale@renegadeinsurance.com
           from: QA Automation <${{ secrets.MAIL_USERNAME }}>
-          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Salesforce API Tests — ${{ github.ref_name }}"
+          subject: "[${{ job.status == 'success' && 'PASSED' || 'FAILED' }}] Salesforce API — Nightly Regression"
           body: |
             ==========================================
-            SALESFORCE API TEST RESULTS
+            SALESFORCE API — NIGHTLY REGRESSION RESULTS
             ==========================================
             Branch  : ${{ github.ref_name }}
-            Commit  : ${{ github.sha }}
             Status  : ${{ job.status }}
             ------------------------------------------
-            SMOKE TESTS     : ${{ env.SMOKE_SUMMARY }}
             REGRESSION TESTS: ${{ env.REGRESSION_SUMMARY }}
             ------------------------------------------
             Allure Report (click to view):
