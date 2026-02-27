@@ -1,49 +1,25 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"broken","Thu Feb 26 15:45:09 UTC 2026","Thu Feb 26 15:45:09 UTC 2026","0","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_dashboards_tab","
-SMOKE — Verify Dashboards tab navigates to the Dashboards section.
+"passed","Fri Feb 27 01:44:21 UTC 2026","Fri Feb 27 01:44:22 UTC 2026","427","tests.ui.login","test_login","","","","test_login_invalid_username","
+REGRESSION — Verify that an invalid username shows the correct Salesforce error.
 
-Asserts: URL contains 'Dashboard' or 'lightning'.
-Note: Uses force=True in the page object due to Salesforce overlay behavior.
+Uses a raw browser (not pre-logged-in) to test the error state.
+Expected error: ""Error: Please check your username and password...""
+
+Fixture: setup_browser (unauthenticated browser)
 "
-"broken","Thu Feb 26 15:41:55 UTC 2026","Thu Feb 26 15:41:55 UTC 2026","0","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_policies_tab","
-SMOKE — Verify Policies tab navigates to the Policies section.
+"passed","Fri Feb 27 01:44:23 UTC 2026","Fri Feb 27 01:44:24 UTC 2026","695","tests.ui.login","test_login","","","","test_login_empty_password","
+REGRESSION — Verify that submitting an empty password shows the correct error.
 
-Asserts: URL contains 'lightning'.
+Salesforce shows a different, shorter error for blank password submissions.
+Expected error: ""Error: Please enter your password.""
+
+Fixture: setup_browser (unauthenticated browser)
 "
-"broken","Thu Feb 26 15:51:39 UTC 2026","Thu Feb 26 15:51:39 UTC 2026","0","tests.ui.e2e","test_submission_flow","TestSubmissionFlow","","","Full submission flow - new account to sold",""
-"broken","Thu Feb 26 15:38:40 UTC 2026","Thu Feb 26 15:38:40 UTC 2026","0","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_mypartners_tab","
-SMOKE — Verify My Partners tab navigates to the My Partners section.
+"passed","Fri Feb 27 01:44:22 UTC 2026","Fri Feb 27 01:44:23 UTC 2026","768","tests.ui.login","test_login","","","","test_login_invalid_password","
+REGRESSION — Verify that an invalid password shows the correct Salesforce error.
 
-Asserts: URL contains 'lightning'.
-"
-"broken","Thu Feb 26 15:28:56 UTC 2026","Thu Feb 26 15:28:56 UTC 2026","0","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_home_tab","
-SMOKE — Verify Home tab navigates to the Salesforce Home page.
+Uses the real username from config but a wrong password.
+Expected error: ""Error: Please check your username and password...""
 
-Asserts: URL contains 'lightning' after clicking Home tab.
-"
-"broken","Thu Feb 26 15:48:24 UTC 2026","Thu Feb 26 15:48:24 UTC 2026","0","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_tasks_tab","
-SMOKE — Verify Tasks tab navigates to the Tasks section.
-
-Asserts: URL contains 'Task' or 'lightning'.
-Note: Uses force=True in the page object due to Salesforce overlay behavior.
-"
-"broken","Thu Feb 26 15:35:25 UTC 2026","Thu Feb 26 15:35:25 UTC 2026","0","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_contacts_tab","
-SMOKE — Verify Contacts tab navigates to the Contacts section.
-
-Asserts: URL contains 'Contact' or 'lightning'.
-"
-"broken","Thu Feb 26 15:32:10 UTC 2026","Thu Feb 26 15:32:10 UTC 2026","0","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_accounts_tab","
-SMOKE — Verify Accounts tab navigates to the Accounts section.
-
-Asserts: URL contains 'Account', 'one.app', or 'New_Business_Flow'
-(Salesforce may redirect to a business flow modal on first click).
-"
-"broken","Thu Feb 26 15:25:41 UTC 2026","Thu Feb 26 15:25:41 UTC 2026","0","tests.ui.login","test_login","","","","test_login_valid_credentials","
-SMOKE — Verify that a valid username and password logs into the app successfully.
-
-Uses the 'login' fixture which handles the full login flow including TOTP.
-Asserts that the 'My Agency' nav element is visible — confirming the user
-is on the authenticated Salesforce home page.
-
-Fixture: login (already logged in)
+Fixture: setup_browser (unauthenticated browser)
 "
