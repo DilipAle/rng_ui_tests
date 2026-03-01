@@ -1,49 +1,25 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"broken","Fri Feb 27 04:01:42 UTC 2026","Fri Feb 27 04:01:42 UTC 2026","0","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_accounts_tab","
-SMOKE — Verify Accounts tab navigates to the Accounts section.
+"passed","Sun Mar 01 01:55:04 UTC 2026","Sun Mar 01 01:55:05 UTC 2026","727","tests.ui.login","test_login","","","","test_login_invalid_password","
+REGRESSION — Verify that an invalid password shows the correct Salesforce error.
 
-Asserts: URL contains 'Account', 'one.app', or 'New_Business_Flow'
-(Salesforce may redirect to a business flow modal on first click).
+Uses the real username from config but a wrong password.
+Expected error: ""Error: Please check your username and password...""
+
+Fixture: setup_browser (unauthenticated browser)
 "
-"broken","Fri Feb 27 04:21:00 UTC 2026","Fri Feb 27 04:21:00 UTC 2026","0","tests.ui.e2e","test_submission_flow","TestSubmissionFlow","","","Full submission flow - new account to sold",""
-"broken","Fri Feb 27 04:08:09 UTC 2026","Fri Feb 27 04:08:09 UTC 2026","0","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_mypartners_tab","
-SMOKE — Verify My Partners tab navigates to the My Partners section.
+"passed","Sun Mar 01 01:55:04 UTC 2026","Sun Mar 01 01:55:04 UTC 2026","358","tests.ui.login","test_login","","","","test_login_invalid_username","
+REGRESSION — Verify that an invalid username shows the correct Salesforce error.
 
-Asserts: URL contains 'lightning'.
+Uses a raw browser (not pre-logged-in) to test the error state.
+Expected error: ""Error: Please check your username and password...""
+
+Fixture: setup_browser (unauthenticated browser)
 "
-"broken","Fri Feb 27 03:58:29 UTC 2026","Fri Feb 27 03:58:29 UTC 2026","0","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_home_tab","
-SMOKE — Verify Home tab navigates to the Salesforce Home page.
+"passed","Sun Mar 01 01:55:06 UTC 2026","Sun Mar 01 01:55:06 UTC 2026","633","tests.ui.login","test_login","","","","test_login_empty_password","
+REGRESSION — Verify that submitting an empty password shows the correct error.
 
-Asserts: URL contains 'lightning' after clicking Home tab.
-"
-"broken","Fri Feb 27 04:11:21 UTC 2026","Fri Feb 27 04:11:21 UTC 2026","0","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_policies_tab","
-SMOKE — Verify Policies tab navigates to the Policies section.
+Salesforce shows a different, shorter error for blank password submissions.
+Expected error: ""Error: Please enter your password.""
 
-Asserts: URL contains 'lightning'.
-"
-"broken","Fri Feb 27 03:55:15 UTC 2026","Fri Feb 27 03:55:15 UTC 2026","0","tests.ui.login","test_login","","","","test_login_valid_credentials","
-SMOKE — Verify that a valid username and password logs into the app successfully.
-
-Uses the 'login' fixture which handles the full login flow including TOTP.
-Asserts that the 'My Agency' nav element is visible — confirming the user
-is on the authenticated Salesforce home page.
-
-Fixture: login (already logged in)
-"
-"broken","Fri Feb 27 04:17:46 UTC 2026","Fri Feb 27 04:17:46 UTC 2026","0","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_tasks_tab","
-SMOKE — Verify Tasks tab navigates to the Tasks section.
-
-Asserts: URL contains 'Task' or 'lightning'.
-Note: Uses force=True in the page object due to Salesforce overlay behavior.
-"
-"broken","Fri Feb 27 04:14:34 UTC 2026","Fri Feb 27 04:14:34 UTC 2026","0","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_dashboards_tab","
-SMOKE — Verify Dashboards tab navigates to the Dashboards section.
-
-Asserts: URL contains 'Dashboard' or 'lightning'.
-Note: Uses force=True in the page object due to Salesforce overlay behavior.
-"
-"broken","Fri Feb 27 04:04:55 UTC 2026","Fri Feb 27 04:04:55 UTC 2026","0","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_contacts_tab","
-SMOKE — Verify Contacts tab navigates to the Contacts section.
-
-Asserts: URL contains 'Contact' or 'lightning'.
+Fixture: setup_browser (unauthenticated browser)
 "
