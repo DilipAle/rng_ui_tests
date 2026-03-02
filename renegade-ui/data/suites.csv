@@ -1,5 +1,5 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Sun Mar 01 01:55:04 UTC 2026","Sun Mar 01 01:55:05 UTC 2026","727","tests.ui.login","test_login","","","","test_login_invalid_password","
+"passed","Mon Mar 02 01:46:55 UTC 2026","Mon Mar 02 01:46:56 UTC 2026","1380","tests.ui.login","test_login","","","","test_login_invalid_password","
 REGRESSION — Verify that an invalid password shows the correct Salesforce error.
 
 Uses the real username from config but a wrong password.
@@ -7,19 +7,19 @@ Expected error: ""Error: Please check your username and password...""
 
 Fixture: setup_browser (unauthenticated browser)
 "
-"passed","Sun Mar 01 01:55:04 UTC 2026","Sun Mar 01 01:55:04 UTC 2026","358","tests.ui.login","test_login","","","","test_login_invalid_username","
-REGRESSION — Verify that an invalid username shows the correct Salesforce error.
-
-Uses a raw browser (not pre-logged-in) to test the error state.
-Expected error: ""Error: Please check your username and password...""
-
-Fixture: setup_browser (unauthenticated browser)
-"
-"passed","Sun Mar 01 01:55:06 UTC 2026","Sun Mar 01 01:55:06 UTC 2026","633","tests.ui.login","test_login","","","","test_login_empty_password","
+"passed","Mon Mar 02 01:46:57 UTC 2026","Mon Mar 02 01:46:58 UTC 2026","1186","tests.ui.login","test_login","","","","test_login_empty_password","
 REGRESSION — Verify that submitting an empty password shows the correct error.
 
 Salesforce shows a different, shorter error for blank password submissions.
 Expected error: ""Error: Please enter your password.""
+
+Fixture: setup_browser (unauthenticated browser)
+"
+"passed","Mon Mar 02 01:46:54 UTC 2026","Mon Mar 02 01:46:55 UTC 2026","909","tests.ui.login","test_login","","","","test_login_invalid_username","
+REGRESSION — Verify that an invalid username shows the correct Salesforce error.
+
+Uses a raw browser (not pre-logged-in) to test the error state.
+Expected error: ""Error: Please check your username and password...""
 
 Fixture: setup_browser (unauthenticated browser)
 "
