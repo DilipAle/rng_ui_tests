@@ -1,4 +1,4 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"broken","Fri Mar 06 01:47:56 UTC 2026","Fri Mar 06 01:47:56 UTC 2026","0","tests.ui.login","test_login","","","","test_login_invalid_credentials",""
-"broken","Fri Mar 06 01:47:56 UTC 2026","Fri Mar 06 01:47:56 UTC 2026","0","tests.ui.policy","test_policy","","","","test_policy_list_not_empty",""
-"broken","Fri Mar 06 01:47:56 UTC 2026","Fri Mar 06 01:47:56 UTC 2026","0","tests.ui.dashboard","test_dashboard","","","","test_dashboard_navigation_visible",""
+"broken","Sun Mar 08 01:47:30 UTC 2026","Sun Mar 08 01:47:30 UTC 2026","0","tests.ui.policy","test_policy","","","","test_policy_list_not_empty",""
+"broken","Sun Mar 08 01:47:30 UTC 2026","Sun Mar 08 01:47:30 UTC 2026","0","tests.ui.login","test_login","","","","test_login_invalid_credentials",""
+"broken","Sun Mar 08 01:47:30 UTC 2026","Sun Mar 08 01:47:30 UTC 2026","0","tests.ui.dashboard","test_dashboard","","","","test_dashboard_navigation_visible",""
