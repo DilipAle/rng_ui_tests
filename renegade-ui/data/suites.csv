@@ -1,5 +1,5 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Sat Mar 07 01:29:38 UTC 2026","Sat Mar 07 01:29:39 UTC 2026","625","tests.ui.login","test_login","","","","test_login_empty_password","
+"passed","Sun Mar 08 01:47:19 UTC 2026","Sun Mar 08 01:47:20 UTC 2026","563","tests.ui.login","test_login","","","","test_login_empty_password","
 REGRESSION — Verify that submitting an empty password shows the correct error.
 
 Salesforce shows a different, shorter error for blank password submissions.
@@ -7,7 +7,7 @@ Expected error: ""Error: Please enter your password.""
 
 Fixture: setup_browser (unauthenticated browser)
 "
-"passed","Sat Mar 07 01:29:37 UTC 2026","Sat Mar 07 01:29:38 UTC 2026","729","tests.ui.login","test_login","","","","test_login_invalid_password","
+"passed","Sun Mar 08 01:47:18 UTC 2026","Sun Mar 08 01:47:19 UTC 2026","709","tests.ui.login","test_login","","","","test_login_invalid_password","
 REGRESSION — Verify that an invalid password shows the correct Salesforce error.
 
 Uses the real username from config but a wrong password.
@@ -15,7 +15,7 @@ Expected error: ""Error: Please check your username and password...""
 
 Fixture: setup_browser (unauthenticated browser)
 "
-"passed","Sat Mar 07 01:29:36 UTC 2026","Sat Mar 07 01:29:37 UTC 2026","309","tests.ui.login","test_login","","","","test_login_invalid_username","
+"passed","Sun Mar 08 01:47:17 UTC 2026","Sun Mar 08 01:47:18 UTC 2026","345","tests.ui.login","test_login","","","","test_login_invalid_username","
 REGRESSION — Verify that an invalid username shows the correct Salesforce error.
 
 Uses a raw browser (not pre-logged-in) to test the error state.
