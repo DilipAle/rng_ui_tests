@@ -1,13 +1,13 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Tue Mar 10 01:42:04 UTC 2026","Tue Mar 10 01:42:04 UTC 2026","489","tests.ui.login","test_login","","","","test_login_invalid_username","
-REGRESSION — Verify that an invalid username shows the correct Salesforce error.
+"passed","Wed Mar 11 01:41:56 UTC 2026","Wed Mar 11 01:41:56 UTC 2026","843","tests.ui.login","test_login","","","","test_login_empty_password","
+REGRESSION — Verify that submitting an empty password shows the correct error.
 
-Uses a raw browser (not pre-logged-in) to test the error state.
-Expected error: ""Error: Please check your username and password...""
+Salesforce shows a different, shorter error for blank password submissions.
+Expected error: ""Error: Please enter your password.""
 
 Fixture: setup_browser (unauthenticated browser)
 "
-"passed","Tue Mar 10 01:42:04 UTC 2026","Tue Mar 10 01:42:05 UTC 2026","889","tests.ui.login","test_login","","","","test_login_invalid_password","
+"passed","Wed Mar 11 01:41:54 UTC 2026","Wed Mar 11 01:41:55 UTC 2026","1005","tests.ui.login","test_login","","","","test_login_invalid_password","
 REGRESSION — Verify that an invalid password shows the correct Salesforce error.
 
 Uses the real username from config but a wrong password.
@@ -15,11 +15,11 @@ Expected error: ""Error: Please check your username and password...""
 
 Fixture: setup_browser (unauthenticated browser)
 "
-"passed","Tue Mar 10 01:42:06 UTC 2026","Tue Mar 10 01:42:07 UTC 2026","938","tests.ui.login","test_login","","","","test_login_empty_password","
-REGRESSION — Verify that submitting an empty password shows the correct error.
+"passed","Wed Mar 11 01:41:53 UTC 2026","Wed Mar 11 01:41:54 UTC 2026","405","tests.ui.login","test_login","","","","test_login_invalid_username","
+REGRESSION — Verify that an invalid username shows the correct Salesforce error.
 
-Salesforce shows a different, shorter error for blank password submissions.
-Expected error: ""Error: Please enter your password.""
+Uses a raw browser (not pre-logged-in) to test the error state.
+Expected error: ""Error: Please check your username and password...""
 
 Fixture: setup_browser (unauthenticated browser)
 "
