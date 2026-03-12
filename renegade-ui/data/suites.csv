@@ -1,13 +1,5 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Wed Mar 11 01:41:56 UTC 2026","Wed Mar 11 01:41:56 UTC 2026","843","tests.ui.login","test_login","","","","test_login_empty_password","
-REGRESSION — Verify that submitting an empty password shows the correct error.
-
-Salesforce shows a different, shorter error for blank password submissions.
-Expected error: ""Error: Please enter your password.""
-
-Fixture: setup_browser (unauthenticated browser)
-"
-"passed","Wed Mar 11 01:41:54 UTC 2026","Wed Mar 11 01:41:55 UTC 2026","1005","tests.ui.login","test_login","","","","test_login_invalid_password","
+"passed","Thu Mar 12 01:43:14 UTC 2026","Thu Mar 12 01:43:14 UTC 2026","678","tests.ui.login","test_login","","","","test_login_invalid_password","
 REGRESSION — Verify that an invalid password shows the correct Salesforce error.
 
 Uses the real username from config but a wrong password.
@@ -15,7 +7,15 @@ Expected error: ""Error: Please check your username and password...""
 
 Fixture: setup_browser (unauthenticated browser)
 "
-"passed","Wed Mar 11 01:41:53 UTC 2026","Wed Mar 11 01:41:54 UTC 2026","405","tests.ui.login","test_login","","","","test_login_invalid_username","
+"passed","Thu Mar 12 01:43:15 UTC 2026","Thu Mar 12 01:43:15 UTC 2026","593","tests.ui.login","test_login","","","","test_login_empty_password","
+REGRESSION — Verify that submitting an empty password shows the correct error.
+
+Salesforce shows a different, shorter error for blank password submissions.
+Expected error: ""Error: Please enter your password.""
+
+Fixture: setup_browser (unauthenticated browser)
+"
+"passed","Thu Mar 12 01:43:13 UTC 2026","Thu Mar 12 01:43:13 UTC 2026","287","tests.ui.login","test_login","","","","test_login_invalid_username","
 REGRESSION — Verify that an invalid username shows the correct Salesforce error.
 
 Uses a raw browser (not pre-logged-in) to test the error state.
