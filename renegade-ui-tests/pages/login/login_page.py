@@ -92,17 +92,22 @@ class LoginPage(BasePage):
             - Codes refresh every 30 seconds using the current timestamp + secret
         """
         try:
-            # Only proceed if Salesforce redirected to the TOTP verification page
-            if "TotpVerificationUi" not in self.page.url:
+            # Only proceed if Salesforce redirected to the TOTP verification page.
+            # Match broadly — Salesforce uses both "TotpVerificationUi" and
+            # "TotpVerification" (without Ui) depending on org config and release.
+            if "Totp" not in self.page.url and "totp" not in self.page.url.lower():
                 return
             # If no secret is set, skip silently (cannot complete MFA)
             if not totp_secret:
                 return
-            # Generate the current 6-digit TOTP code
+            # Generate the current 6-digit TOTP code right before entering it
+            # to minimise the chance of the code expiring during slow page loads.
+            self.page.wait_for_selector(self.totp_input, timeout=15000)
             code = pyotp.TOTP(totp_secret).now()
-            self.page.wait_for_selector(self.totp_input, timeout=10000)
             self.page.fill(self.totp_input, code)
             self.page.click(self.totp_verify_button)
+            # Wait for TOTP page to navigate away before returning
+            self.page.wait_for_load_state("load", timeout=30000)
         except Exception:
             pass  # Never let MFA handling crash the test
 
@@ -144,13 +149,13 @@ class LoginPage(BasePage):
         """
         Check if the current page shows a successful login state.
 
-        Looks for the 'My Agency' span in the Salesforce navigation bar
+        Looks for the 'Home' navigation tab in the Salesforce navigation bar
         which only appears when the user is authenticated.
 
         Returns:
             bool: True if logged in, False otherwise
         """
-        return self.page.is_visible("//span[@title = 'My Agency']")
+        return self.page.is_visible("a[title='Home']")
 
     def get_error_message(self):
         """
