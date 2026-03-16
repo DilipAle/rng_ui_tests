@@ -31,9 +31,13 @@ AuotmationAuto360/
 ├── customer-portal-tests/           # Project 3 — Customer Portal UI
 ├── salesforce-api-tests/            # Project 4 — Salesforce REST API
 │
+├── prompts/                         # Plain-English acceptance criteria
+├── contexts/                        # AI test generation rules
+│
 └── .github/
     └── workflows/
-        └── smoke-tests.yml          # CI/CD — runs all 4 projects in parallel
+        ├── ci.yml                   # Smoke + E2E on every push/PR
+        └── nightly.yml              # Regression tests every night at midnight UTC
 ```
 
 ---
@@ -129,30 +133,35 @@ Tests never call Playwright directly — always go through page objects.
 | Marker | Purpose | When to run |
 |---|---|---|
 | `smoke` | Critical path — verify app is alive | Every deploy |
+| `e2e` | Full business flows from start to finish | Every deploy |
 | `regression` | Full coverage — edge cases + negative | Nightly / pre-release |
-| `api` | API-level tests (Salesforce project) | Every deploy |
 
 ```bash
-pytest -m smoke -v        # smoke only
-pytest -m regression -v   # regression only
-pytest -v                 # all tests
+pytest -m smoke -v          # smoke only
+pytest -m e2e -v            # e2e only
+pytest -m "smoke or e2e" -v # smoke + e2e (CI default)
+pytest -m regression -v     # regression only
+pytest -v                   # all tests
 ```
 
 ---
 
 ## CI/CD
 
-GitHub Actions workflow at `.github/workflows/smoke-tests.yml` runs all 4 projects
-in parallel on every push to `main` or `develop` and on every pull request.
+Two GitHub Actions workflows run automatically:
 
-Each job:
-- Installs dependencies
-- Installs Playwright browsers (UI jobs)
+### `ci.yml` — On every push to `main`/`develop` and every pull request
+Runs all 4 projects in parallel. Each job:
+- Installs Python 3.13 and dependencies
+- Installs Playwright Chromium browser (UI jobs)
 - Creates `.env` from GitHub Secrets
-- Runs `pytest -m smoke -v`
-- Generates Allure report (uploaded as artifact, kept 7 days)
+- Runs `pytest -m smoke -v` then `pytest -m e2e -v`
+- Generates and publishes Allure report to GitHub Pages
 - Uploads screenshots on failure (kept 7 days)
 - Emails test results to the QA lead
+
+### `nightly.yml` — Every night at midnight UTC (and manual trigger)
+Same setup, but runs `pytest -m regression -v` instead of smoke/e2e.
 
 ### GitHub Secrets required
 
@@ -363,6 +372,16 @@ allure-report/        ← generated HTML report
 screenshots/          ← failure screenshots
 report.html           ← pytest-html report
 ```
+
+---
+
+## Documentation
+
+| Document | Purpose |
+|---|---|
+| [README.md](README.md) | Technical reference (this file) |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Team onboarding — setup, contribution rules, troubleshooting |
+| [docs/TEST_CASES.md](docs/TEST_CASES.md) | Complete test inventory with descriptions and assertions |
 
 ---
 
