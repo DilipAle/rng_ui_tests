@@ -1,1 +1,1 @@
-[{"uid":"bf03c6b07eec6e5","name":"test_policy_list_not_empty","time":{"start":1773626423162,"stop":1773626423162,"duration":0},"status":"broken","severity":"normal"},{"uid":"e70ce01c498e69d5","name":"test_dashboard_navigation_visible","time":{"start":1773626423160,"stop":1773626423160,"duration":0},"status":"broken","severity":"normal"},{"uid":"55d8f5b732669515","name":"test_login_invalid_credentials","time":{"start":1773626423148,"stop":1773626423148,"duration":0},"status":"broken","severity":"normal"}]
+[]
