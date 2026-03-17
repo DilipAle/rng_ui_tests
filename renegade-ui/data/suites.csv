@@ -1,91 +1,31 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Mon Mar 16 08:20:05 UTC 2026","Mon Mar 16 08:20:05 UTC 2026","414","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_mypartners_tab","
-SMOKE — Verify My Partners tab navigates to the My Partners section.
+"broken","Tue Mar 17 01:48:29 UTC 2026","Tue Mar 17 01:48:29 UTC 2026","0","tests.ui.login","test_login","","","","test_login_invalid_password","
+REGRESSION — Verify that an invalid password shows the correct Salesforce error.
 
-Asserts: URL contains 'lightning'.
+Uses the real username from config but a wrong password.
+Expected error: ""Error: Please check your username and password...""
+
+Fixture: setup_browser (unauthenticated browser)
 "
-"passed","Mon Mar 16 08:20:07 UTC 2026","Mon Mar 16 08:20:08 UTC 2026","456","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_policies_tab","
-SMOKE — Verify Policies tab navigates to the Policies section.
+"broken","Tue Mar 17 01:48:25 UTC 2026","Tue Mar 17 01:48:25 UTC 2026","0","tests.ui.login","test_login","","","","test_login_invalid_username","
+REGRESSION — Verify that an invalid username shows the correct Salesforce error.
 
-Asserts: URL contains 'lightning'.
+Uses a raw browser (not pre-logged-in) to test the error state.
+Expected error: ""Error: Please check your username and password...""
+
+Fixture: setup_browser (unauthenticated browser)
 "
-"broken","Mon Mar 16 08:26:27 UTC 2026","Mon Mar 16 08:27:09 UTC 2026","42803","tests.ui.policy","test_policy_intake_form","","","","test_policy_intake_form_full_flow","
-E2E — Full intake form flow on the policy detail page:
+"broken","Tue Mar 17 01:48:33 UTC 2026","Tue Mar 17 01:48:33 UTC 2026","0","tests.ui.login","test_login","","","","test_login_empty_password","
+REGRESSION — Verify that submitting an empty password shows the correct error.
 
-    1. Send Intake Form CTA is visible and active
-    2. Click CTA → confirm modal → CTA goes disabled
-    3. Reload → Intake Form Status component visible + Resend CTA visible
-    4. Click Resend → confirm modal → Resend CTA goes disabled
+Salesforce shows a different, shorter error for blank password submissions.
+Expected error: ""Error: Please enter your password.""
+
+Fixture: setup_browser (unauthenticated browser)
+"
+"passed","Tue Mar 17 01:48:09 UTC 2026","Tue Mar 17 01:48:21 UTC 2026","11501","tests.ui.account","test_account_creation","","","","test_create_account_validation_errors","
+REGRESSION — Verify that saving an Individual account form with all fields
+empty displays validation error messages and stays on the form.
 
 Fixture: login (already logged in)
-"
-"passed","Mon Mar 16 08:20:09 UTC 2026","Mon Mar 16 08:20:10 UTC 2026","309","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_dashboards_tab","
-SMOKE — Verify Dashboards tab navigates to the Dashboards section.
-
-Asserts: URL contains 'Dashboard' or 'lightning'.
-Note: Uses force=True in the page object due to Salesforce overlay behavior.
-"
-"passed","Mon Mar 16 08:20:11 UTC 2026","Mon Mar 16 08:20:12 UTC 2026","308","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_tasks_tab","
-SMOKE — Verify Tasks tab navigates to the Tasks section.
-
-Asserts: URL contains 'Task' or 'lightning'.
-Note: Uses force=True in the page object due to Salesforce overlay behavior.
-"
-"passed","Mon Mar 16 08:19:59 UTC 2026","Mon Mar 16 08:19:59 UTC 2026","417","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_home_tab","
-SMOKE — Verify Home tab navigates to the Salesforce Home page.
-
-Asserts: URL contains 'lightning' after clicking Home tab.
-"
-"passed","Mon Mar 16 08:20:01 UTC 2026","Mon Mar 16 08:20:01 UTC 2026","455","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_accounts_tab","
-SMOKE — Verify Accounts tab navigates to the Accounts section.
-
-Asserts: URL contains 'Account', 'one.app', or 'New_Business_Flow'
-(Salesforce may redirect to a business flow modal on first click).
-"
-"broken","Mon Mar 16 08:21:34 UTC 2026","Mon Mar 16 08:22:05 UTC 2026","31421","tests.ui.new_business_pipeline","test_intake_form","","","","test_send_intake_form_button_visible","
-SMOKE — Verify that the Send Intake Form button is visible and active
-on a Pre-qualification policy in the New Business Pipeline.
-
-Read-only — does not click the button or change any state.
-
-Flow:
-    1. Go to Prospects pipeline
-    2. Filter by Pre-Qualification → Apply Filters
-    3. Click first policy record
-    4. Assert Send Intake Form button is present
-    5. Go back to pipeline → Reset filter (filter persists server-side)
-
-Fixture: login (already logged in)
-"
-"passed","Mon Mar 16 08:24:34 UTC 2026","Mon Mar 16 08:24:34 UTC 2026","1","tests.ui.e2e","test_submission_flow","TestSubmissionFlow","","","Full submission flow - new account to sold",""
-"broken","Mon Mar 16 08:23:42 UTC 2026","Mon Mar 16 08:24:26 UTC 2026","43641","tests.ui.policy","test_policy_intake_form","","","","test_policy_send_intake_form_cta_visible","
-SMOKE — Verify that the Send Intake Form CTA is visible and active
-on a Pre-qualification policy page.
-
-Read-only — does not click the CTA or change any state.
-
-Fixture: login (already logged in)
-"
-"broken","Mon Mar 16 08:19:12 UTC 2026","Mon Mar 16 08:19:55 UTC 2026","42515","tests.ui.account","test_account_creation","","","","test_create_individual_account","
-SMOKE — Verify that a new Individual Suspect/Prospect account can be created
-with a unique first name, last name, phone, and email.
-
-Generates unique data via faker so the test never conflicts with existing records.
-Deletes the created account in teardown to keep QA clean.
-
-Fixture: login (already logged in)
-"
-"passed","Mon Mar 16 08:19:57 UTC 2026","Mon Mar 16 08:19:57 UTC 2026","291","tests.ui.login","test_login","","","","test_login_valid_credentials","
-SMOKE — Verify that a valid username and password logs into the app successfully.
-
-Uses the 'login' fixture which handles the full login flow including TOTP.
-Asserts that the 'My Agency' nav element is visible — confirming the user
-is on the authenticated Salesforce home page.
-
-Fixture: login (already logged in)
-"
-"passed","Mon Mar 16 08:20:03 UTC 2026","Mon Mar 16 08:20:03 UTC 2026","332","tests.ui.navigation_tab","test_navigation_tab","TestNavigationTabPage","","","test_contacts_tab","
-SMOKE — Verify Contacts tab navigates to the Contacts section.
-
-Asserts: URL contains 'Contact' or 'lightning'.
 "
