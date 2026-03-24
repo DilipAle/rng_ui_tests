@@ -56,27 +56,46 @@ class PolicyIntakeFormPage(BasePage):
     # ── CTA visibility ───────────────────────────────────────────────────────
 
     def is_send_intake_form_visible(self) -> bool:
-        """Returns True if the Send Intake Form CTA is present on the page."""
-        return self.is_visible(self.send_intake_form_cta)
+        """
+        Returns True if the Send Intake Form CTA is present on the page.
+
+        Uses get_by_role() (accessibility tree) rather than a CSS selector so
+        that closed Salesforce LWC shadow DOM is pierced reliably. Also waits
+        up to 15 s for the LWC component to render — page.is_visible() returns
+        immediately and fails if called before Lightning finishes rendering.
+        """
+        try:
+            btn = self.page.get_by_role('button', name='Send Intake Form')
+            btn.wait_for(timeout=15000)
+            return btn.is_visible()
+        except Exception:
+            return False
 
     def is_send_intake_form_active(self) -> bool:
         """
         Returns True if the Send Intake Form CTA is present and enabled.
         Checks aria-disabled and disabled attributes.
+        Uses get_by_role() to pierce closed LWC shadow DOM.
         """
-        btn = self.page.query_selector(self.send_intake_form_cta)
-        if not btn:
+        try:
+            btn = self.page.get_by_role('button', name='Send Intake Form')
+            btn.wait_for(timeout=15000)
+            disabled = btn.get_attribute("disabled")
+            aria_disabled = btn.get_attribute("aria-disabled")
+            return disabled is None and aria_disabled != 'true'
+        except Exception:
             return False
-        disabled = btn.get_attribute("disabled") or btn.get_attribute("aria-disabled")
-        return disabled is None or disabled == "false"
 
     def is_send_intake_form_disabled(self) -> bool:
         """Returns True if the Send Intake Form CTA is disabled or gone."""
-        btn = self.page.query_selector(self.send_intake_form_cta)
-        if not btn:
+        try:
+            btn = self.page.get_by_role('button', name='Send Intake Form')
+            btn.wait_for(timeout=5000)
+            disabled = btn.get_attribute("disabled")
+            aria_disabled = btn.get_attribute("aria-disabled")
+            return disabled is not None or aria_disabled == 'true'
+        except Exception:
             return True  # Gone entirely — cannot be clicked
-        disabled = btn.get_attribute("disabled") or btn.get_attribute("aria-disabled")
-        return disabled is not None and disabled != "false"
 
     def is_send_reminder_visible(self) -> bool:
         """Returns True if the Send Reminder CTA is visible on the page."""

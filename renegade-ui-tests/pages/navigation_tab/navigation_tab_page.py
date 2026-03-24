@@ -81,6 +81,7 @@ class NavigationTabPage(BasePage):
         self.page.wait_for_load_state("load")
 
     def go_to_dashboards(self):
+        
         """
         Click the Dashboards tab using force=True and wait for load.
 

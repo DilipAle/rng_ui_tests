@@ -54,17 +54,17 @@ class AuthSession:
 # ── Independent browser (for login / error tests) ────────────────────────────
 
 @pytest.fixture(scope="function")
-def setup_browser():
+def setup_browser(_playwright):
     """
     Fresh browser + page per test.
     Use only for tests that do NOT need a logged-in session.
+    Uses the session-scoped _playwright instance to avoid asyncio loop conflicts.
     """
-    with sync_playwright() as playwright:
-        browser_config = BrowserConfig(playwright)
-        browser = browser_config.launch_browser()
-        page = browser.new_page(viewport={"width": 1920, "height": 1080})
-        yield page
-        browser.close()
+    browser_config = BrowserConfig(_playwright)
+    browser = browser_config.launch_browser()
+    page = browser.new_page(viewport={"width": 1920, "height": 1080})
+    yield page
+    browser.close()
 
 
 # ── Config ───────────────────────────────────────────────────────────────────
@@ -121,10 +121,29 @@ def _auth_session(_browser, config):
     login_page = LoginPage(page)
     login_page.login_with_totp(config.USERNAME, config.PASSWORD, config.TOTP_SECRET)
 
-    # Wait for Lightning nav bar — confirms login succeeded
-    page.wait_for_selector("a[title='Home']", timeout=120000)
+    # Salesforce goes through a multi-step redirect chain after login:
+    #   contentDoor → one.app → /lightning → /lightning/r/<object>/...
+    # wait_for_url() misses already-completed redirects, so we poll instead.
+    for _ in range(120):
+        if "lightning.force.com" in page.url:
+            break
+        page.wait_for_timeout(1000)
+    else:
+        raise Exception(f"Login did not reach Lightning domain. Current URL: {page.url}")
 
-    # Capture the Lightning URL (e.g. https://org.lightning.force.com/lightning/page/home)
+    # Salesforce server-side session memory redirects to the last visited page
+    # after login (e.g. a Log__c audit record from a previous test run). Navigate
+    # to the Accounts list explicitly to establish a stable, app-neutral home URL
+    # that every test can reliably navigate from without being redirected elsewhere.
+    lightning_base = page.url.split('/lightning/')[0]
+    page.goto(f"{lightning_base}/lightning/o/Account/list")
+    for _ in range(30):
+        if "/o/Account/" in page.url:
+            break
+        page.wait_for_timeout(1000)
+    page.wait_for_load_state("domcontentloaded")
+
+    # Capture the Account list URL — stable, no last-visited-page redirects
     home_url = page.url
 
     # Close the setup page — the context and its session stay alive
@@ -154,8 +173,13 @@ def login(_auth_session):
     page = _auth_session.context.new_page()
     page.goto(_auth_session.home_url)
 
-    # Confirm Lightning rendered — shared context keeps session alive
-    page.wait_for_selector("a[title='Home']", timeout=60000)
+    # Confirm Lightning is still active — shared context keeps session alive
+    for _ in range(60):
+        if "lightning.force.com" in page.url:
+            break
+        page.wait_for_timeout(1000)
+    else:
+        raise Exception(f"Login fixture: not on Lightning domain. URL: {page.url}")
 
     yield page
 

@@ -155,7 +155,7 @@ class LoginPage(BasePage):
         Returns:
             bool: True if logged in, False otherwise
         """
-        return self.page.is_visible("a[title='Home']")
+        return self.page.is_visible(".slds-global-header")
 
     def get_error_message(self):
         """

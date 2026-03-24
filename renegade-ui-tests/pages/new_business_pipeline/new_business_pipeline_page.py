@@ -90,6 +90,11 @@ class NewBusinessPipelinePage(BasePage):
             span[title*='Personal Auto']                        → LOB option span (CSS)
             getByRole('button', name='Apply Filters').first     → Apply button
         """
+        # Step 0 — Reset any previously applied filters first.
+        # A prior test run may have left filters applied (e.g. if teardown failed).
+        # Resetting ensures lobFilter options are fully populated before selection.
+        self._reset_if_present()
+
         # Step 1 — Status filter: Pre-Qualification
         self.page.locator(self.status_filter_select).wait_for(timeout=15000)
         self.page.locator(self.status_filter_select).select_option(label="Pre-Qualification")
@@ -139,19 +144,45 @@ class NewBusinessPipelinePage(BasePage):
         Call this after every test that applies a filter so the pipeline is
         not left in a filtered state for subsequent tests.
 
-        Confirmed selector: getByRole('button', { name: 'Reset' })
+        Confirmed selector from DOM: button.reset-button
         """
-        self.page.get_by_role('button', name='Reset').click()
-        self.page.wait_for_load_state("load")
+        self.page.locator('button.reset-button').click()
+        self.page.wait_for_load_state("domcontentloaded")
+
+    def _reset_if_present(self):
+        """
+        Click Reset only if the button is currently visible.
+
+        Called at the start of filter_by_prequalification() to clear any
+        filters left by a previous test run before applying new ones.
+        Silently skips if Reset is not present (no filters applied).
+        """
+        try:
+            reset = self.page.locator('button.reset-button')
+            reset.wait_for(state='visible', timeout=3000)
+            reset.click()
+            self.page.wait_for_timeout(1000)  # Let filter panel return to default state
+        except Exception:
+            pass  # No filters applied — safe to continue
 
     # ── Button state checks ──────────────────────────────────────────────────
 
-    def is_send_intake_form_button_visible(self) -> bool:
-        """Returns True if the Send Intake Form button is present on the page."""
-        return (
-            self.is_visible('//a[contains(.,"Send Intake Form")]')
-            or self.is_visible('//button[contains(.,"Send Intake Form")]')
-        )
+    def is_send_intake_form_button_visible(self, timeout: int = 15000) -> bool:
+        """
+        Returns True if the Send Intake Form button is present on the page.
+
+        Waits up to `timeout` ms for the button to appear — Salesforce Lightning
+        components continue rendering after networkidle, so an instant is_visible()
+        check races against LWC mount and returns False prematurely.
+        """
+        try:
+            self.page.wait_for_selector(
+                '//a[contains(.,"Send Intake Form")] | //button[contains(.,"Send Intake Form")]',
+                timeout=timeout,
+            )
+            return True
+        except Exception:
+            return False
 
     def is_send_intake_form_button_active(self) -> bool:
         """

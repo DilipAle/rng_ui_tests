@@ -24,6 +24,7 @@ not "Account Name". Use input[name='Name'] (Salesforce API name) as the primary
 selector — it is independent of the displayed label and survives label changes.
 """
 
+import re
 from pages.base.base_page import BasePage
 from faker import Faker
 
@@ -47,16 +48,34 @@ class AccountCreationPage(BasePage):
         """
         Click the Next button on the record type selection modal.
 
-        Scoped to the dialog so it cannot match any other Next button on the page.
-        wait_for_timeout(1500) after click lets the new-account form fully render
-        before the test proceeds to fill fields.
+        Tries dialog-scoped click first (modal mode in My Agency app), then falls
+        back to page-level click (full-page mode when opened via direct Account URL
+        in a different app context, e.g. Logger Console).
+
+        In full-page mode, clicking Next triggers URL navigation to
+        Account/new?...&recordTypeId=... — wait for that navigation to settle
+        rather than using a fixed timeout.
 
         Confirmed selector (Codegen):
             dialog.get_by_role("button", name="Next")
         """
-        dialog = self.page.get_by_role("dialog")
-        dialog.get_by_role("button", name="Next").click()
-        self.page.wait_for_timeout(1500)  # Wait for new-account form to render
+        in_dialog = False
+        try:
+            dialog = self.page.get_by_role("dialog")
+            dialog.get_by_role("button", name="Next").click()
+            in_dialog = True
+        except Exception:
+            self.page.get_by_role("button", name="Next").click()
+
+        if in_dialog:
+            self.page.wait_for_timeout(1500)  # Form renders in-place within dialog
+        else:
+            # Full-page mode: Next navigates to Account/new?...&recordTypeId=...
+            try:
+                self.page.wait_for_url("**recordTypeId=*", timeout=10000)
+                self.page.wait_for_load_state("domcontentloaded", timeout=15000)
+            except Exception:
+                self.page.wait_for_timeout(1500)
 
     # ── Form fill ───────────────────────────────────────────────────────────
 
@@ -92,6 +111,16 @@ class AccountCreationPage(BasePage):
             2. '*First Name' / '*Last Name'  — labels with required asterisk prefix
             3. 'First Name'  / 'Last Name'   — labels without asterisk
         """
+        # ── Server Error recovery ─────────────────────────────────────────────
+        # Salesforce sandboxes occasionally return a transient Server Error when
+        # loading the account creation form. The URL already contains recordTypeId,
+        # so reloading navigates directly to the correct form without re-selecting
+        # the record type.
+        if self.page.is_visible("text=Looks like there's a problem"):
+            self.page.reload()
+            self.page.wait_for_load_state("domcontentloaded", timeout=15000)
+            self.page.wait_for_timeout(2000)
+
         # ── Account / Customer Name ──────────────────────────────────────────
         for _loc in [
             lambda: self.page.locator("input[name='Name']"),
@@ -108,32 +137,12 @@ class AccountCreationPage(BasePage):
                 pass
 
         # ── First Name ───────────────────────────────────────────────────────
-        for _loc in [
-            lambda: self.page.locator("input[name='VRNA__First_Name__c']"),
-            lambda: self.page.get_by_role('textbox', name='*First Name'),
-            lambda: self.page.get_by_role('textbox', name='First Name'),
-        ]:
-            try:
-                _el = _loc()
-                _el.wait_for(timeout=2000)
-                _el.fill(first_name)
-                break
-            except Exception:
-                pass
+        # .nth(0) — two inputs share this name in the form; always target the first
+        self.page.locator("input[name='VRNA__First_Name__c']").nth(0).fill(first_name)
 
         # ── Last Name ────────────────────────────────────────────────────────
-        for _loc in [
-            lambda: self.page.locator("input[name='VRNA__Last_Name__c']"),
-            lambda: self.page.get_by_role('textbox', name='*Last Name'),
-            lambda: self.page.get_by_role('textbox', name='Last Name'),
-        ]:
-            try:
-                _el = _loc()
-                _el.wait_for(timeout=2000)
-                _el.fill(last_name)
-                break
-            except Exception:
-                pass
+        # .nth(0) — same reason as first name
+        self.page.locator("input[name='VRNA__Last_Name__c']").nth(0).fill(last_name)
 
         # ── Referral Source ──────────────────────────────────────────────────
         # Required field — must be filled before save or Salesforce returns a validation error
@@ -155,7 +164,7 @@ class AccountCreationPage(BasePage):
         """
         self.page.get_by_label('Address Search', exact=True).fill(address)
 
-    def select_referral_source(self, value: str = 'Other'):
+    def select_referral_source(self, value: str = None):
         """
         Select a value from the Referral Source combobox.
 
@@ -163,18 +172,105 @@ class AccountCreationPage(BasePage):
         Lightning (LWC) combobox, not a native <select> element.
         Confirmed selector via Playwright Codegen.
 
+        Default behaviour (value=None): auto-selects the first available non-None,
+        non-Other option by scoping to the combobox container. If this org only
+        has '--None--' and 'Other', falls back to selecting 'Other' explicitly.
+
+        'Other' triggers two required dependent fields: 'How did you learn about
+        us?' and 'Other (Specify)'. These are ALWAYS filled after any selection —
+        the 2-second wait silently passes when they are not present.
+
         Args:
-            value: Referral source option label (default: 'Other')
+            value: Referral source option label. If None, auto-selects first option.
         """
-        self.page.get_by_role('combobox', name='Referral Source').click()
-        self.page.get_by_role('option', name=value).click()
+        combobox = self.page.get_by_role('combobox', name='Referral Source')
+        combobox.click()
+
+        if value:
+            self.page.get_by_role('option', name=value).click()
+        else:
+            # Strategy 1: scope to the combobox container — avoids Target LOBs
+            # dual-listbox options (which also have role="option").
+            selected_non_other = False
+            try:
+                container = self.page.locator('.slds-combobox__container').filter(has=combobox)
+                opt = container.get_by_role('option').filter(
+                    has_not_text=re.compile(r'(--|other)', re.IGNORECASE)
+                ).first
+                opt.wait_for(timeout=3000)
+                opt.click()
+                selected_non_other = True
+            except Exception:
+                pass
+
+            if not selected_non_other:
+                # Strategy 2: org only has '--None--' and 'Other' — select Other
+                # explicitly, then fill both dependent fields below.
+                try:
+                    self.page.get_by_role('option', name='Other').first.click(timeout=3000)
+                except Exception:
+                    # Last resort: any non-None option (closes the open dropdown)
+                    try:
+                        self.page.get_by_role('option').filter(
+                            has_not_text='--None--'
+                        ).first.click(timeout=3000)
+                    except Exception:
+                        pass
+
+        # ── Dependent fields (only appear when 'Other' is selected) ──────────
+        # A 2-second wait silently passes when these fields are not present.
+        # When present, both are required and must be filled before save.
+        try:
+            how_combo = self.page.get_by_role('combobox', name='How did you learn about us?')
+            how_combo.wait_for(timeout=2000)
+            how_combo.click()
+            # Scope to this combobox's container to avoid Target LOBs interference
+            try:
+                how_container = self.page.locator('.slds-combobox__container').filter(has=how_combo)
+                how_opt = how_container.get_by_role('option').filter(has_not_text='--None--').first
+                how_opt.wait_for(timeout=3000)
+                how_opt.click()
+            except Exception:
+                # Fallback: page-level first non-None option (dropdown is open)
+                self.page.get_by_role('option').filter(has_not_text='--None--').first.click(timeout=3000)
+        except Exception:
+            pass
+
+        try:
+            other_field = self.page.get_by_role('textbox', name='Other (Specify)')
+            other_field.wait_for(timeout=2000)
+            other_field.fill('Other')
+        except Exception:
+            pass
 
     # ── Save ────────────────────────────────────────────────────────────────
 
     def save(self):
-        """Click Save and wait for the page to load."""
+        """
+        Click Save and wait for Salesforce to navigate to the account detail page.
+
+        wait_for_url("**/Account/**") would match the current URL immediately
+        (Account/new?...&recordTypeId=...) and return without waiting for the
+        actual post-save navigation. Use a lambda that only resolves when the URL
+        moves to the account detail page (no 'new' or 'recordTypeId' in the path).
+
+        Performs an early validation-error check 2 seconds after clicking Save so
+        that form errors surface immediately rather than timing out after 30 s in
+        wait_for_url and producing a confusing error location.
+        """
         self.page.locator(self.save_button).click()
-        self.page.wait_for_load_state("load")
+        # Short pause to let inline validation errors render before URL polling
+        self.page.wait_for_timeout(2000)
+        if self.is_save_error_visible():
+            raise AssertionError(
+                "Account save failed — validation errors are visible on the form. "
+                "Check all required fields (Referral Source, dependent picklists, etc.)."
+            )
+        self.page.wait_for_url(
+            lambda url: '/Account/' in url and 'new' not in url and 'recordTypeId' not in url,
+            timeout=30000,
+        )
+        self.page.wait_for_load_state("domcontentloaded")
 
     # ── Verification ────────────────────────────────────────────────────────
 

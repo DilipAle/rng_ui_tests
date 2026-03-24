@@ -63,14 +63,15 @@ def _create_account_and_navigate_to_policy(page):
     creation.save()
 
     # Wait for account detail page then create a policy via 'New PL Policy'
-    page.wait_for_load_state("networkidle", timeout=30000)
+    # networkidle is unreliable in Salesforce Lightning SPA — use domcontentloaded
+    page.wait_for_load_state("domcontentloaded", timeout=30000)
     page.wait_for_selector(f"//h1[contains(.,'{first_name}')]", timeout=30000)
 
     policy_page = PolicyPage(page)
     policy_page.create_pl_policy()
 
     # Policy detail page is now open
-    page.wait_for_load_state("networkidle", timeout=30000)
+    page.wait_for_load_state("domcontentloaded", timeout=30000)
 
 
 def _delete_account(page):

@@ -39,8 +39,10 @@ def test_login_valid_credentials(login):
     Fixture: login (already logged in)
     """
     page = login
-    # 'My Agency' span only appears in the nav bar when authenticated
-    page.wait_for_selector("//span[@title = 'My Agency']", timeout=30000)
+    # .slds-global-header is the Lightning header container — always present
+    # in the main DOM on every authenticated Lightning page. More reliable than
+    # nav items (org-specific) or search input (nested in shadow DOM).
+    page.wait_for_selector(".slds-global-header", timeout=30000)
     print(f"Page Title: {page.title()}")
 
 
