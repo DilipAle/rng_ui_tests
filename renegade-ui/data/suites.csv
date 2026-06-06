@@ -1,19 +1,13 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"broken","Fri Jun 05 03:00:05 UTC 2026","Fri Jun 05 03:00:05 UTC 2026","0","tests.ui.account","test_account_creation","","","","test_create_account_validation_errors","
-REGRESSION — Verify that saving an Individual account form with all fields
-empty displays validation error messages and stays on the form.
+"passed","Sat Jun 06 02:48:50 UTC 2026","Sat Jun 06 02:48:51 UTC 2026","364","tests.ui.login","test_login","","","","test_login_invalid_username","
+REGRESSION — Verify that an invalid username shows the correct Salesforce error.
 
-Fixture: login (already logged in)
-"
-"passed","Fri Jun 05 03:02:07 UTC 2026","Fri Jun 05 03:02:07 UTC 2026","892","tests.ui.login","test_login","","","","test_login_invalid_password","
-REGRESSION — Verify that an invalid password shows the correct Salesforce error.
-
-Uses the real username from config but a wrong password.
+Uses a raw browser (not pre-logged-in) to test the error state.
 Expected error: ""Error: Please check your username and password...""
 
 Fixture: setup_browser (unauthenticated browser)
 "
-"passed","Fri Jun 05 03:02:08 UTC 2026","Fri Jun 05 03:02:08 UTC 2026","825","tests.ui.login","test_login","","","","test_login_empty_password","
+"passed","Sat Jun 06 02:48:52 UTC 2026","Sat Jun 06 02:48:52 UTC 2026","694","tests.ui.login","test_login","","","","test_login_empty_password","
 REGRESSION — Verify that submitting an empty password shows the correct error.
 
 Salesforce shows a different, shorter error for blank password submissions.
@@ -21,10 +15,16 @@ Expected error: ""Error: Please enter your password.""
 
 Fixture: setup_browser (unauthenticated browser)
 "
-"passed","Fri Jun 05 03:02:06 UTC 2026","Fri Jun 05 03:02:06 UTC 2026","388","tests.ui.login","test_login","","","","test_login_invalid_username","
-REGRESSION — Verify that an invalid username shows the correct Salesforce error.
+"broken","Sat Jun 06 02:46:49 UTC 2026","Sat Jun 06 02:46:49 UTC 2026","0","tests.ui.account","test_account_creation","","","","test_create_account_validation_errors","
+REGRESSION — Verify that saving an Individual account form with all fields
+empty displays validation error messages and stays on the form.
 
-Uses a raw browser (not pre-logged-in) to test the error state.
+Fixture: login (already logged in)
+"
+"passed","Sat Jun 06 02:48:51 UTC 2026","Sat Jun 06 02:48:52 UTC 2026","757","tests.ui.login","test_login","","","","test_login_invalid_password","
+REGRESSION — Verify that an invalid password shows the correct Salesforce error.
+
+Uses the real username from config but a wrong password.
 Expected error: ""Error: Please check your username and password...""
 
 Fixture: setup_browser (unauthenticated browser)
