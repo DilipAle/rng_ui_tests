@@ -1,19 +1,19 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"broken","Thu Nov 05 04:50:24 UTC 2026","Thu Nov 05 04:50:24 UTC 2026","0","tests.ui.account","test_account_creation","","","","test_create_account_validation_errors","
+"broken","Fri Nov 06 04:53:59 UTC 2026","Fri Nov 06 04:54:30 UTC 2026","30562","tests.ui.login","test_login","","","","test_login_empty_password","
+REGRESSION — Verify that submitting an empty password shows the correct error.
+
+Salesforce shows a different, shorter error for blank password submissions.
+Expected error: ""Error: Please enter your password.""
+
+Fixture: setup_browser (unauthenticated browser)
+"
+"broken","Fri Nov 06 04:49:09 UTC 2026","Fri Nov 06 04:49:09 UTC 2026","0","tests.ui.account","test_account_creation","","","","test_create_account_validation_errors","
 REGRESSION — Verify that saving an Individual account form with all fields
 empty displays validation error messages and stays on the form.
 
 Fixture: login (already logged in)
 "
-"broken","Thu Nov 05 04:53:39 UTC 2026","Thu Nov 05 04:54:10 UTC 2026","30956","tests.ui.login","test_login","","","","test_login_invalid_password","
-REGRESSION — Verify that an invalid password shows the correct Salesforce error.
-
-Uses the real username from config but a wrong password.
-Expected error: ""Error: Please check your username and password...""
-
-Fixture: setup_browser (unauthenticated browser)
-"
-"broken","Thu Nov 05 04:52:01 UTC 2026","Thu Nov 05 04:52:32 UTC 2026","30707","tests.ui.login","test_login","","","","test_login_invalid_username","
+"broken","Fri Nov 06 04:50:46 UTC 2026","Fri Nov 06 04:51:16 UTC 2026","30557","tests.ui.login","test_login","","","","test_login_invalid_username","
 REGRESSION — Verify that an invalid username shows the correct Salesforce error.
 
 Uses a raw browser (not pre-logged-in) to test the error state.
@@ -21,11 +21,11 @@ Expected error: ""Error: Please check your username and password...""
 
 Fixture: setup_browser (unauthenticated browser)
 "
-"broken","Thu Nov 05 04:55:16 UTC 2026","Thu Nov 05 04:55:47 UTC 2026","30734","tests.ui.login","test_login","","","","test_login_empty_password","
-REGRESSION — Verify that submitting an empty password shows the correct error.
+"broken","Fri Nov 06 04:52:22 UTC 2026","Fri Nov 06 04:52:53 UTC 2026","30564","tests.ui.login","test_login","","","","test_login_invalid_password","
+REGRESSION — Verify that an invalid password shows the correct Salesforce error.
 
-Salesforce shows a different, shorter error for blank password submissions.
-Expected error: ""Error: Please enter your password.""
+Uses the real username from config but a wrong password.
+Expected error: ""Error: Please check your username and password...""
 
 Fixture: setup_browser (unauthenticated browser)
 "
